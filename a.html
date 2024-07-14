@@ -1,0 +1,577 @@
+''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://thumbs.dreamstime.com/b/work-notes-background-studying-creative-lifestyle-planning-seamless-pattern-hand-drawn-illustration-pastel-colors-elegant-studies-124685125.jpg'), linear-gradient(to bottom right, #ffe6e6, #ffe6ff);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+        #navbar {
+            background-color: #F5CBA7;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        #navbar.scrolled {
+            background-color: #F5CBA7;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover {
+            color: #ff6699;
+        }
+        .search-bar {
+            padding: 10px;
+            border: 2px solid #ff6699;
+            border-radius: 25px;
+            width: 300px;
+            outline: none;
+            transition: all 0.3s;
+            margin: 0 auto;
+            display: block;
+        }
+        .search-bar:focus {
+            border-color: #ff3399;
+        }
+        @keyframes searchBarAnimation {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .search-bar {
+            animation: searchBarAnimation 1s ease-in-out infinite;
+        }
+        .container {
+            margin: 100px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .job-box {
+    background: #F5F5DC; /* Slightly Darker Light Cyan */
+    border: 2px solid #ff6699;
+    border-radius: 15px;
+    width: 220px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 15px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s, opacity 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+        .job-box:hover {
+            transform: scale(1.05);
+            z-index: 1;
+        }
+        .job-box img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        .job-box:hover img {
+            transform: scale(1.1) rotate(-5deg);
+        }
+        .job-title {
+            margin: 10px 0;
+            font-weight: bold;
+            color: #ff6699;
+            font-size: 18px;
+        }
+        .apply-btn, .favorite-btn {
+            background: #ff6699;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 14px;
+            margin: 5px;
+        }
+        .apply-btn:hover {
+            background: #ff3399;
+        }
+        .favorite-btn {
+            background: transparent;
+            border: 2px solid #ff6699;
+            color: #ff6699;
+        }
+        .favorite-btn.active {
+            background: #ff3399;
+            border: none;
+            color: #fff;
+        }
+        .job-details {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: opacity 0.3s, transform 0.3s;
+            opacity: 0;
+            color: #fff;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .job-box:hover .job-details {
+            display: flex;
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        .details-left {
+            padding-right: 10px;
+            border-right: 2px solid #ff6699;
+            margin-bottom: 10px;
+        }
+        .details-right {
+            text-align: center;
+        }
+        .login-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            animation: popup 0.3s ease-out;
+        }
+        .login-container input {
+            padding: 10px;
+            border: 2px solid #ff6699;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .login-container input:focus {
+            border-color: #ff3399;
+        }
+        .login-container button {
+            background: #ff6699;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .login-container button:hover {
+            background: #ff3399;
+        }
+        .signup-link {
+            color: #ff6699;
+            cursor: pointer;
+        }
+        .signup-link:hover {
+            text-decoration: underline;
+        }
+        @keyframes popup {
+            0% { transform: translate(-50%, -60%); opacity: 0; }
+            100% { transform: translate(-50%, -50%); opacity: 1; }
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <div class="nav-links">
+            <a href="#" id="homeLink">Home</a>
+            <a href="#" id="moreLink">More</a>
+        </div>
+        <input type="text" class="search-bar" id="search-bar" placeholder="Search for jobs...">
+        <div id="profileIcon" style="cursor: pointer; font-size: 24px;">👤</div>
+    </div>
+
+    <div class="container" id="jobContainer">
+        <!-- Job Listings -->
+        <div class="job-box" data-title="Software Engineer">
+            <img src="C:\Users\smpse\Downloads\website\se.png" alt="se">
+            <div class="job-title">Software Engineer</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $80,000 - $100,000</p>
+                    <p><strong>Description:</strong> Develop and maintain software applications. Work with a team to design, implement, and test new features.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn" onclick="window.open('https://www.instahyre.com/software-engineering-jobs/', '_blank')">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <!-- 19 More Jobs -->
+        <div class="job-box" data-title="Graphic Designer">
+            <img src="C:\Users\smpse\Downloads\website\ge.png" alt="Graphic Designer">
+            <div class="job-title">Graphic Designer</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $50,000 - $70,000</p>
+                    <p><strong>Description:</strong> Create visual concepts and graphics for various media. Collaborate with clients to understand their needs and deliver design solutions.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Doctor">
+            <img src="C:\Users\smpse\Downloads\website\d.png" alt="Doctor">
+            <div class="job-title">Doctor</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $120,000 - $150,000</p>
+                    <p><strong>Description:</strong> Provide medical care to patients, diagnose illnesses, and prescribe treatments. Work in a healthcare setting to improve patient health.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Pilot">
+            <img src="C:\Users\smpse\Downloads\website\p.png" alt="Pilot">
+            <div class="job-title">Pilot</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $90,000 - $130,000</p>
+                    <p><strong>Description:</strong> Operate aircraft to transport passengers or cargo. Ensure safety protocols are followed and perform pre-flight checks.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Engineer">
+            <img src="C:\Users\smpse\Downloads\website\e.png" alt="Engineer">
+            <div class="job-title">Engineer</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $75,000 - $95,000</p>
+                    <p><strong>Description:</strong> Design, develop, and implement engineering projects. Work with teams to solve technical problems and improve processes.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Plumber">
+            <img src="C:\Users\smpse\Downloads\website\pu.png" alt="Plumber">
+            <div class="job-title">Plumber</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $40,000 - $60,000</p>
+                    <p><strong>Description:</strong> Install and repair plumbing systems. Work with pipes, fixtures, and fittings to ensure proper water flow and drainage.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Teacher">
+            <img src="C:\Users\smpse\Downloads\website\t.png" alt="Teacher">
+            <div class="job-title">Teacher</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $35,000 - $50,000</p>
+                    <p><strong>Description:</strong> Educate students in various subjects. Prepare lesson plans, assess student performance, and create a positive learning environment.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Chef">
+            <img src="C:\Users\smpse\Downloads\website\c.png" alt="Chef">
+            <div class="job-title">Chef</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $60,000 - $80,000</p>
+                    <p><strong>Description:</strong> Prepare and cook meals. Create menu items, manage kitchen staff, and ensure food safety and quality.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Nurse">
+            <img src="nurse.jpg" alt="Nurse">
+            <div class="job-title">Nurse</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $70,000 - $90,000</p>
+                    <p><strong>Description:</strong> Provide patient care, administer medications, and assist doctors in medical procedures. Maintain patient records and support health care needs.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Dentist">
+            <img src="dentist.jpg" alt="Dentist">
+            <div class="job-title">Dentist</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $100,000 - $130,000</p>
+                    <p><strong>Description:</strong> Examine, diagnose, and treat dental issues. Perform cleanings, fillings, and other dental procedures.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Lawyer">
+            <img src="lawyer.jpg" alt="Lawyer">
+            <div class="job-title">Lawyer</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $110,000 - $150,000</p>
+                    <p><strong>Description:</strong> Provide legal counsel, represent clients in court, and draft legal documents. Specialize in various areas of law.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Architect">
+            <img src="architect.jpg" alt="Architect">
+            <div class="job-title">Architect</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $85,000 - $110,000</p>
+                    <p><strong>Description:</strong> Design and plan buildings and structures. Work with clients to create functional and aesthetically pleasing designs.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Pharmacist">
+            <img src="pharmacist.jpg" alt="Pharmacist">
+            <div class="job-title">Pharmacist</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $70,000 - $90,000</p>
+                    <p><strong>Description:</strong> Dispense medications, offer pharmaceutical advice, and ensure the safe and effective use of prescriptions.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Veterinarian">
+            <img src="veterinarian.jpg" alt="Veterinarian">
+            <div class="job-title">Veterinarian</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $80,000 - $100,000</p>
+                    <p><strong>Description:</strong> Diagnose and treat illnesses in animals. Perform surgeries and provide preventive care.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Accountant">
+            <img src="accountant.jpg" alt="Accountant">
+            <div class="job-title">Accountant</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $60,000 - $80,000</p>
+                    <p><strong>Description:</strong> Manage financial records, prepare reports, and ensure compliance with accounting regulations.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Civil Engineer">
+            <img src="civil-engineer.jpg" alt="Civil Engineer">
+            <div class="job-title">Civil Engineer</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $70,000 - $95,000</p>
+                    <p><strong>Description:</strong> Design and oversee construction projects. Ensure infrastructure meets safety and regulatory standards.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">F❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Data Scientist">
+            <img src="data-scientist.jpg" alt="Data Scientist">
+            <div class="job-title">Data Scientist</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $90,000 - $120,000</p>
+                    <p><strong>Description:</strong> Analyze data to provide actionable insights. Build and maintain data models and algorithms.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Social Worker">
+            <img src="social-worker.jpg" alt="Social Worker">
+            <div class="job-title">Social Worker</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $50,000 - $70,000</p>
+                    <p><strong>Description:</strong> Support individuals and families in need. Provide counseling and connect clients with resources.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Construction Worker">
+            <img src="construction-worker.jpg" alt="Construction Worker">
+            <div class="job-title">Construction Worker</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $40,000 - $55,000</p>
+                    <p><strong>Description:</strong> Perform construction tasks including building structures, operating machinery, and following safety protocols.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+        <div class="job-box" data-title="Web Developer">
+            <img src="web-developer.jpg" alt="Web Developer">
+            <div class="job-title">Web Developer</div>
+            <div class="job-details">
+                <div class="details-left">
+                    <p><strong>Salary:</strong> $70,000 - $90,000</p>
+                    <p><strong>Description:</strong> Design and develop websites. Write code, test functionality, and collaborate with clients to meet their needs.</p>
+                </div>
+                <div class="details-right">
+                    <button class="apply-btn">Apply</button>
+                    <button class="favorite-btn">❤</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="login-container" id="loginContainer">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button id="loginButton">Login</button>
+        <p class="signup-link">Don't have an account? <span id="signupLink">Sign up</span></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navbar = document.getElementById('navbar');
+            const profileIcon = document.getElementById('profileIcon');
+            const loginContainer = document.getElementById('loginContainer');
+            const overlay = document.getElementById('overlay');
+            const signupLink = document.getElementById('signupLink');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            profileIcon.addEventListener('click', () => {
+                loginContainer.style.display = 'flex';
+                overlay.style.display = 'block';
+                loginContainer.style.animation = 'popup 0.3s ease-out';
+            });
+
+            overlay.addEventListener('click', () => {
+                loginContainer.style.display = 'none';
+                overlay.style.display = 'none';
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    loginContainer.style.display = 'none';
+                    overlay.style.display = 'none';
+                }
+            });
+
+            signupLink.addEventListener('click', () => {
+                alert('Sign up functionality is not implemented.');
+            });
+
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    btn.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
